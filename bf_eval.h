@@ -52,13 +52,13 @@ private:
 typedef direction< 1> forward;
 typedef direction<-1> backward;
 
-void display_error_and_throw(const char* message, const char* program, unsigned int command_index)
+inline int display_error_cause(const char* message, const char* program, unsigned int command_index)
 {
-        using namespace std;
+        //! Display error and what caused it.
+	std::cout<<"Error: "<<message<<", cause:"<<std::endl
+		 <<program<<std::endl<<std::setfill(' ')<<std::setw(command_index + 1)<<'^'<<std::endl;
 
-	cout<<program<<endl<<setfill(' ')<<setw(command_index + 1)<<'^'<<endl;
-
-	throw runtime_error(message);
+	return EXIT_FAILURE;
 }
 
 //! todo: get rid of this paradigm, it's slow
@@ -79,7 +79,7 @@ template<typename Direction> unsigned int track(const char* program, unsigned in
 		i += direction();
 	}
 
-	display_error_and_throw("Can't find a match.", program, command_index);
+	throw std::runtime_error("can't find corresponding command");
 	return 0;
 }
 
@@ -124,16 +124,14 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
 				break;
 			default:
 			        if (!ignore_unknowns)
-				        detail::display_error_and_throw("Invalid command here:", program, command_index);
+				        throw std::runtime_error("found an invalid command");
 			}
 
 			++command_index;
 		}
 	}
 	catch (std::runtime_error& e) {
-	        std::cout<<e.what()<<std::endl;
-
-	        return EXIT_FAILURE;
+	        return detail::display_error_cause(e.what(), program, command_index);
 	}
 
 	return EXIT_SUCCESS;
@@ -146,7 +144,7 @@ struct reader_t {
 		std::ifstream file(filename, std::fstream::in);
 
 		if (!file)
-		        throw std::runtime_error("Couldn't read file");
+		        throw std::runtime_error("Couldn't read file.");
 
 		std::string line;
 
@@ -175,9 +173,9 @@ int evaluate(const char* filename, bool ignore_unknowns = false)
 	}
 	catch (std::runtime_error& e) {
 	        std::cout<<e.what()<<std::endl;
-
-	        return EXIT_FAILURE;
 	}
+
+	return EXIT_FAILURE;
 }
 
 #endif /* _H_BF_EVAL */
