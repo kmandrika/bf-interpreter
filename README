@@ -1,1 +1,16 @@
-A simple brainf*ck interpreter
+This is a simple Brainfuck (http://en.wikipedia.org/wiki/Brainfuck) interpreter written in C++.
+
+The basics:
+--------------------------------------------------------------------------
+Usage: [OPTION]... <source-file>
+
+Options:
+  -e, --evaluate=program    evaluate a one line program
+  -i, --ignore-unknowns     ignore unknown command within the program
+  -h, --help                print this message
+
+--------------------------------------------------------------------------
+
+$ bf -e "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+Hello World!
+$
