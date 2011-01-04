@@ -46,7 +46,7 @@ template<typename S> inline typename S::value_type& cells_t<S>::operator [](unsi
         typename S::size_type size = cells_.size();
 
         if (index >= size)
-	        cells_.resize(size + growth_factor(), 0);
+	        cells_.resize(size + (index - size) + growth_factor(), 0);
 
 	return cells_[index];
 }
@@ -56,7 +56,7 @@ template<typename S> inline typename S::value_type const& cells_t<S>::operator [
         typename S::size_type size = cells_.size();
 
         if (index >= size)
-	        cells_.resize(size + growth_factor(), 0);
+	        cells_.resize(size + (index - size) + growth_factor(), 0);
 
 	return cells_[index];
 }

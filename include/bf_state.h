@@ -29,7 +29,7 @@ namespace detail {
 //! Program state - responsible for incrementing and decrementing the pc and
 //  cell values.
 template<
-        typename T = unsigned int                 // pc counter
+        typename T = unsigned int                 // pc
       , typename S = std::vector<unsigned char>   // cell storage
 >
 struct state_t {

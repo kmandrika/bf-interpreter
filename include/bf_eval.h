@@ -87,7 +87,9 @@ template<typename Direction> unsigned int track(const char* program, unsigned in
 
 int evaluate(const char* program, size_t program_size, bool ignore_unknowns = false)
 {
-        detail::state_t<> state;
+        detail::state_t<unsigned int, std::vector<unsigned int> > state;
+	detail::cells_t<std::vector<unsigned int> > jump;
+
 	unsigned int command_index = 0;
 
 	try {
@@ -109,18 +111,22 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
 			        state.decrement_current_cell();
 				break;
 			case '.':
-			        std::cout<<state.get()<<std::flush;
+			        std::cout<<static_cast<unsigned char>(state.get())<<std::flush;
 				break;
 			case ',':
 			        std::cin>>state.set();
 				break;
 			case '[':
 			        if (state.get() == 0)
-				        command_index = detail::track(program, command_index, detail::forward(program_size));
+				        command_index = jump[command_index] == 0 ?
+					        jump[command_index] = detail::track(program, command_index, detail::forward(program_size)) :
+					        jump[command_index];
 				break;
 			case ']':
 			        if (state.get() != 0)
-				        command_index = detail::track(program, command_index, detail::backward(0));
+				        command_index = jump[command_index] == 0 ?
+					        jump[command_index] = detail::track(program, command_index, detail::backward(0)) :
+					        jump[command_index];
 				break;
 			default:
 			        if (!ignore_unknowns)
