@@ -17,12 +17,60 @@
 */
 
 #include "bf_eval.h"
+#include <getopt.h>
+#include <cstring>
 
-extern const char program[] =
-        "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++."
-        ">.+++.------.--------.>+.>.";
+int usage()
+{
+        using namespace std;
+
+	cout<<"usage: [OPTION]... <source-file>"<<endl<<endl;
+	cout<<"Options:"<<endl;
+	cout<<"  -e, --evaluate=program    evaluate a one line program"<<endl;
+	cout<<"  -i, --ignore-unknowns     ignore unknown command within the program"<<endl;
+	cout<<"  -h, --help                print this message"<<endl;
+
+	return EXIT_SUCCESS;
+}
 
 int main(int argc, char* argv[])
 {
+        option long_options[] = {
+	        { "evaluate",        required_argument, 0, 'e' }
+	      , { "ignore-unknowns", no_argument,       0, 'i' }
+	      , { "help",            no_argument,       0, 'h' }
+	};
+
+	int c;
+	int option_index = 0;
+
+	bool ignore_unknowns = false;
+	bool inline_program = false;
+
+	while ((c = getopt_long(argc, argv, "e:ih", long_options, &option_index)) != -1) {
+	        switch (c) {
+		case 'i':
+		        ignore_unknowns = true;
+			break;
+		case 'e':
+		        inline_program = true;
+		        break;
+		case 'h':
+		case '?':
+		        return usage();
+		}
+	}
+
+	if (inline_program && optind == argc)
+	        return evaluate(argv[optind - 1], strlen(argv[optind - 1]), ignore_unknowns);
+
+	if (!inline_program && optind < argc)
+	        return evaluate(argv[optind], ignore_unknowns);
+
+	return usage();
+
+#if 0
+	const char program[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
         evaluate(program, sizeof program - 1);
+#endif
 }

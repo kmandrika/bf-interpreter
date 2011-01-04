@@ -20,9 +20,9 @@
 #define _H_BF_STATE
 
 #include "bf_cells.h"
-#include "bf_error.h"
 
 #include <limits>
+#include <stdexcept>
 
 namespace detail {
 
@@ -53,7 +53,7 @@ private:
 template<typename T, typename S> inline void state_t<T, S>::increment_current_cell()
 {
         if (cells_[pc_] + 1 > std::numeric_limits<typename S::value_type>::max())
-	        error("cell overflow");
+	        throw std::runtime_error("cell overflow");
 
         ++cells_[pc_];
 }
@@ -61,7 +61,7 @@ template<typename T, typename S> inline void state_t<T, S>::increment_current_ce
 template<typename T, typename S> inline void state_t<T, S>::decrement_current_cell()
 {
         if (cells_[pc_] - 1 < 0)
-	        error("cell underflow");
+	        throw std::runtime_error("cell underflow");
 
         --cells_[pc_];
 }
@@ -69,7 +69,7 @@ template<typename T, typename S> inline void state_t<T, S>::decrement_current_ce
 template<typename T, typename S> inline void state_t<T, S>::increment_pc()
 {
         if (pc_ + 1 > std::numeric_limits<T>::max())
-	        error("pc overflow");
+	        throw std::runtime_error("pc overflow");
 
 	++pc_;
 }
@@ -77,7 +77,7 @@ template<typename T, typename S> inline void state_t<T, S>::increment_pc()
 template<typename T, typename S> inline void state_t<T, S>::decrement_pc()
 {
         if (pc_ - 1 < 0)
-	        error("pc underflow");
+	        throw std::runtime_error("pc underflow");
 
 	--pc_;
 }
