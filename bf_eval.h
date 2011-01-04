@@ -88,10 +88,10 @@ void evaluate(const char* program, size_t program_size)
 		case ' ':
 		        break;
 		case '>':
-		        ++state;
+		        state.increment_pc();
 			break;
 		case '<':
-		        --state;
+		        state.decrement_pc();
 			break;
 		case '+':
 		        state.increment_current_cell();
@@ -103,7 +103,7 @@ void evaluate(const char* program, size_t program_size)
 		        std::cout<<state.get()<<std::flush;
 			break;
 		case ',':
-		        std::cin>>state.get();
+		        std::cin>>state.set();
 			break;
 		case '[':
 		        if (state.get() == 0)

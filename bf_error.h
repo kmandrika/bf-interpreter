@@ -27,12 +27,14 @@ namespace detail {
 
 inline void error(const char* message, const char* program = NULL, unsigned int command_index = 0)
 {
-        std::cout<<message<<std::endl;
+        using namespace std;
+
+        cout<<message<<endl;
 
 	if (program != NULL)
-	        std::cout<<program<<std::endl<<std::setfill(' ')<<std::setw(command_index + 1)<<'^'<<std::endl;
+	        cout<<program<<endl<<setfill(' ')<<setw(command_index + 1)<<'^'<<endl;
 
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 } // namespace detail

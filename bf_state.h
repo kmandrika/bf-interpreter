@@ -28,32 +28,37 @@ namespace detail {
 
 //! Program state - responsible for incrementing and decrementing the pc and
 //  cell values.
-template<typename C = unsigned char, typename T = unsigned int> struct state_t {
+template<
+        typename T = unsigned int                 // pc counter
+      , typename S = std::vector<unsigned char>   // cell storage
+>
+struct state_t {
         state_t() : pc_(0) {
 	}
 
         void increment_current_cell();
         void decrement_current_cell();
 
-        void operator ++();
-        void operator --();
+        void increment_pc();
+        void decrement_pc();
 
-        C& get();
+        typename S::value_type  get() const;
+        typename S::value_type& set();         // this should probably be something like set(C value)
 
 private:
-        cells_t<C> cells_;
+        cells_t<S> cells_;
         T pc_;
 };
 
-template<typename C, typename T> inline void state_t<C, T>::increment_current_cell()
+template<typename T, typename S> inline void state_t<T, S>::increment_current_cell()
 {
-        if (cells_[pc_] + 1 > std::numeric_limits<C>::max())
+        if (cells_[pc_] + 1 > std::numeric_limits<typename S::value_type>::max())
 	        error("cell overflow");
 
         ++cells_[pc_];
 }
 
-template<typename C, typename T> inline void state_t<C, T>::decrement_current_cell()
+template<typename T, typename S> inline void state_t<T, S>::decrement_current_cell()
 {
         if (cells_[pc_] - 1 < 0)
 	        error("cell underflow");
@@ -61,7 +66,7 @@ template<typename C, typename T> inline void state_t<C, T>::decrement_current_ce
         --cells_[pc_];
 }
 
-template<typename C, typename T> inline void state_t<C, T>::operator ++()
+template<typename T, typename S> inline void state_t<T, S>::increment_pc()
 {
         if (pc_ + 1 > std::numeric_limits<T>::max())
 	        error("pc overflow");
@@ -69,7 +74,7 @@ template<typename C, typename T> inline void state_t<C, T>::operator ++()
 	++pc_;
 }
 
-template<typename C, typename T> inline void state_t<C, T>::operator --()
+template<typename T, typename S> inline void state_t<T, S>::decrement_pc()
 {
         if (pc_ - 1 < 0)
 	        error("pc underflow");
@@ -77,7 +82,12 @@ template<typename C, typename T> inline void state_t<C, T>::operator --()
 	--pc_;
 }
 
-template<typename C, typename T> inline C& state_t<C, T>::get()
+template<typename T, typename S> inline typename S::value_type state_t<T, S>::get() const
+{
+        return cells_[pc_];
+}
+
+template<typename T, typename S> inline typename S::value_type& state_t<T, S>::set()
 {
         return cells_[pc_];
 }

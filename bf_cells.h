@@ -29,23 +29,31 @@ inline unsigned int growth_factor()
         return 1000;
 }
 
-//! Cells
-template<typename T = unsigned char, typename S = std::vector<T> > struct cells_t {
-        typedef S storage_t;
-
-public:
+//! Cells - a wrapper that facilitates automatic growth.
+template<typename S = std::vector<unsigned char> > struct cells_t {
         explicit cells_t(unsigned int init_size = 65536) : cells_(init_size, 0) {
 	}
 
-        T& operator [](unsigned int index);
+        typename S::value_type& operator [](unsigned int index);
+        typename S::value_type  operator [](unsigned int index) const;
 
 private:
-        storage_t cells_;
+        mutable S cells_;
 };
 
-template<typename T, typename S> inline T& cells_t<T, S>::operator [](unsigned int index)
+template<typename S> inline typename S::value_type& cells_t<S>::operator [](unsigned int index)
 {
-        typename storage_t::size_type size = cells_.size();
+        typename S::size_type size = cells_.size();
+
+        if (index >= size)
+	        cells_.resize(size + growth_factor(), 0);
+
+	return cells_[index];
+}
+
+template<typename S> inline typename S::value_type cells_t<S>::operator [](unsigned int index) const
+{
+        typename S::size_type size = cells_.size();
 
         if (index >= size)
 	        cells_.resize(size + growth_factor(), 0);
