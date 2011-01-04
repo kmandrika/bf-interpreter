@@ -24,7 +24,7 @@ int usage()
 {
         using namespace std;
 
-	cout<<"usage: [OPTION]... <source-file>"<<endl<<endl;
+	cout<<"Usage: [OPTION]... <source-file>"<<endl<<endl;
 	cout<<"Options:"<<endl;
 	cout<<"  -e, --evaluate=program    evaluate a one line program"<<endl;
 	cout<<"  -i, --ignore-unknowns     ignore unknown command within the program"<<endl;
