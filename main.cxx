@@ -68,9 +68,4 @@ int main(int argc, char* argv[])
 	        return evaluate(argv[optind], ignore_unknowns);
 
 	return usage();
-
-#if 0
-	const char program[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-        evaluate(program, sizeof program - 1);
-#endif
 }
