@@ -52,7 +52,7 @@ private:
 
 template<typename T, typename S> inline void state_t<T, S>::increment_current_cell()
 {
-        if (cells_[pc_] + 1 > std::numeric_limits<typename S::value_type>::max())
+        if (cells_[pc_] == std::numeric_limits<typename S::value_type>::max())
 	        throw std::runtime_error("cell overflow");
 
         ++cells_[pc_];
@@ -68,7 +68,7 @@ template<typename T, typename S> inline void state_t<T, S>::decrement_current_ce
 
 template<typename T, typename S> inline void state_t<T, S>::increment_pc()
 {
-        if (pc_ + 1 > std::numeric_limits<T>::max())
+        if (pc_ == std::numeric_limits<T>::max())
 	        throw std::runtime_error("pc overflow");
 
 	++pc_;
