@@ -174,6 +174,8 @@ int evaluate(const char* filename, bool ignore_unknowns = false)
 		return evaluate(reader, reader, ignore_unknowns);
 	}
 	catch (std::runtime_error& e) {
+	        std::cout<<e.what()<<std::endl;
+
 	        return EXIT_FAILURE;
 	}
 }
