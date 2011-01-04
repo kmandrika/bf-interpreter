@@ -34,8 +34,8 @@ template<typename S = std::vector<unsigned char> > struct cells_t {
         explicit cells_t(unsigned int init_size = 65536) : cells_(init_size, 0) {
 	}
 
-        typename S::value_type& operator [](unsigned int index);
-        typename S::value_type  operator [](unsigned int index) const;
+        typename S::value_type&       operator [](unsigned int index);
+        typename S::value_type const& operator [](unsigned int index) const;
 
 private:
         mutable S cells_;
@@ -51,7 +51,7 @@ template<typename S> inline typename S::value_type& cells_t<S>::operator [](unsi
 	return cells_[index];
 }
 
-template<typename S> inline typename S::value_type cells_t<S>::operator [](unsigned int index) const
+template<typename S> inline typename S::value_type const& cells_t<S>::operator [](unsigned int index) const
 {
         typename S::size_type size = cells_.size();
 
