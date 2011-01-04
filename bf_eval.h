@@ -24,38 +24,30 @@
 
 namespace detail {
 
-struct forward {
-        explicit forward(unsigned int bound) : bound_(bound) {
+template<int D> struct direction {
+        explicit direction(unsigned int bound) : bound_(bound) {
 	}
 
-        static int R() { return -1; }
-        static int L() { return 1; }
+        static int R() { return -D; }
+        static int L() { return  D; }
 
-        int operator ()() const { return 1; }
+        int operator ()() const {
+	        return D;
+	}
 
-        unsigned int bound() const { return bound_; }
+        unsigned int bound() const {
+	        return bound_;
+	}
 
 private:
         unsigned int bound_;
 };
 
-struct backward {
-        explicit backward(unsigned int bound) : bound_(bound) {
-	}
-
-        static int R() { return 1; }
-        static int L() { return -1; }
-
-        int operator ()() const { return -1; }
-
-        unsigned int bound() const { return bound_; }
-
-private:
-        unsigned int bound_;
-};
+typedef direction< 1> forward;
+typedef direction<-1> backward;
 
 //! todo: get rid of this paradigm, it's slow
-template<typename Direction> unsigned int peek(const char* program, unsigned int command_index, Direction direction)
+template<typename Direction> unsigned int track(const char* program, unsigned int command_index, Direction direction)
 {
         unsigned int i = command_index;
 	unsigned int op_count = 0;
@@ -78,7 +70,7 @@ template<typename Direction> unsigned int peek(const char* program, unsigned int
 
 } // namespace detail
 
-void evaluate(const char* program, size_t program_size)
+void evaluate(const char* program, size_t program_size, bool ignore_unknowns = false)
 {
         detail::state_t<> state;
 	unsigned int command_index = 0;
@@ -107,14 +99,15 @@ void evaluate(const char* program, size_t program_size)
 			break;
 		case '[':
 		        if (state.get() == 0)
-			        command_index = detail::peek(program, command_index, detail::forward(program_size));
+			        command_index = detail::track(program, command_index, detail::forward(program_size));
 			break;
 		case ']':
 		        if (state.get() != 0)
-			        command_index = detail::peek(program, command_index, detail::backward(0));
+			        command_index = detail::track(program, command_index, detail::backward(0));
 			break;
 		default:
-		        detail::error("Invalid command here:", program, command_index);
+		        if (!ignore_unknowns)
+			        detail::error("Invalid command here:", program, command_index);
 		}
 
 		++command_index;
