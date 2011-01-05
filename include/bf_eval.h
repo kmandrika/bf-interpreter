@@ -233,6 +233,9 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
                                 if (state.get() != 0)
                                         command_index = table_value;
                                 break;
+                        default:
+                                if (!ignore_unknowns)
+                                        throw std::runtime_error("found an invalid command");
                         }
 
                         ++command_index;

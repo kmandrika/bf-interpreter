@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall
 
 bin/bf : src/bf.cxx include/*.h
 	mkdir -p bin
