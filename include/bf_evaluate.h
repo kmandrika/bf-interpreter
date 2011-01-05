@@ -26,9 +26,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
-#include <string>
-#include <sstream>
-#include <fstream>
 
 namespace detail {
 
@@ -126,47 +123,6 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
         }
 
         return EXIT_SUCCESS;
-}
-
-namespace detail {
-
-struct reader_t {
-        explicit reader_t(const char* filename) : length_(0) {
-                std::ifstream file(filename, std::fstream::in);
-
-                if (!file)
-                        throw std::runtime_error("Couldn't read file.");
-
-                std::string line;
-
-                while (std::getline(file, line)) {
-                        raw_.insert(raw_.end(), line.begin(), line.end());
-                        length_ += line.size();
-                }
-        }
-
-        const char* raw() { return raw_.c_str(); }
-        size_t size() const { return length_; }
-
-private:
-        std::string raw_;
-        size_t length_;
-};
-
-} // namespace detail
-
-int evaluate(const char* filename, bool ignore_unknowns = false)
-{
-        try {
-                detail::reader_t reader(filename);
-
-                return evaluate(reader.raw(), reader.size(), ignore_unknowns);
-        }
-        catch (std::runtime_error& e) {
-                std::cout<<e.what()<<std::endl;
-        }
-
-        return EXIT_FAILURE;
 }
 
 #endif /* _H_BF_EVALUATE */

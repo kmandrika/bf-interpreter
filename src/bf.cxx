@@ -16,9 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "bf_eval.h"
+#include "bf_evaluate.h"
+#include "bf_reader.h"
+
+#include <cstdlib>
 #include <getopt.h>
 #include <cstring>
+#include <stdexcept>
+#include <iostream>
 
 int usage()
 {
@@ -64,8 +69,18 @@ int main(int argc, char* argv[])
         if (inline_program && optind == argc)
                 return evaluate(argv[optind - 1], strlen(argv[optind - 1]), ignore_unknowns);
 
-        if (!inline_program && optind < argc)
-                return evaluate(argv[optind], ignore_unknowns);
+        if (!inline_program && optind < argc) {
+                try {
+                        detail::reader_t program(argv[optind]);
+
+                        return evaluate(program.raw(), program.size(), ignore_unknowns);
+                }
+                catch (std::runtime_error& e) {
+                        std::cout<<e.what()<<std::endl;
+
+                        return EXIT_FAILURE;
+                }
+        }
 
         return usage();
 }
