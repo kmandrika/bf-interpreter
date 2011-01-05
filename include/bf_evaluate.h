@@ -49,7 +49,7 @@ template<typename C>
 int evaluate(const char* program, size_t program_size, bool ignore_unknowns = false)
 {
         detail::state_t<unsigned int, std::vector<C> > state;
-        detail::optimizations_table table(65536, 1);
+        detail::optimizations_table table(state.cell_count(), 1);
 
         detail::optimize(program, program_size, table);
 

@@ -30,12 +30,15 @@ inline unsigned int growth_factor()
 }
 
 //! Cells - a wrapper that facilitates automatic growth.
+//  the cell storage type requires operator [], value_type, ::resize(), and ::size()
 template<typename S = std::vector<unsigned char> > struct cells_t {
         explicit cells_t(unsigned int init_size = 65536, typename S::value_type initial = 0) : cells_(init_size, initial), initial_(initial) {
         }
 
         typename S::value_type&       operator [](unsigned int index);
         typename S::value_type const& operator [](unsigned int index) const;
+
+        size_t size() const;
 
 private:
         mutable S cells_;
@@ -60,6 +63,11 @@ template<typename S> inline typename S::value_type const& cells_t<S>::operator [
                 cells_.resize(size + (index - size) + growth_factor(), initial_);
 
         return cells_[index];
+}
+
+template<typename S> inline size_t cells_t<S>::size() const
+{
+        return cells_.size();
 }
 
 } // namespace detail
