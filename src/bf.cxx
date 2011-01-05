@@ -33,32 +33,74 @@ int usage()
         cout<<"Options:"<<endl;
         cout<<"  -e, --evaluate=program    evaluate a one line program"<<endl;
         cout<<"  -i, --ignore-unknowns     ignore unknown command within the program"<<endl;
+        cout<<"  -s, --use-signed-cells    use a signed type for each cell"<<endl;
         cout<<"  -h, --help                print this message"<<endl;
 
         return EXIT_SUCCESS;
 }
 
+struct options_t {
+        options_t() : ignore_unknowns(false), inline_program(false), use_signed(false) {
+        }
+
+        bool ignore_unknowns;        // ignore any unknown characters encountered
+        bool inline_program;         // -e was speficied
+        bool use_signed;             // use signed cells
+};
+
+int resolve_options_and_evaluate(const options_t& options, int optind, int argc, char* argv[])
+{
+        typedef signed   int S_storage;
+        typedef unsigned int U_storage;
+
+        if (options.inline_program && optind == argc) {
+                return options.use_signed ?
+                        evaluate<S_storage>(argv[optind - 1], strlen(argv[optind - 1]), options.ignore_unknowns) :
+                        evaluate<U_storage>(argv[optind - 1], strlen(argv[optind - 1]), options.ignore_unknowns);
+        }
+
+        if (!options.inline_program && optind < argc) {
+                try {
+                        detail::reader_t program(argv[optind]);
+
+                        return options.use_signed ?
+                                evaluate<S_storage>(program.raw(), program.size(), options.ignore_unknowns) :
+                                evaluate<U_storage>(program.raw(), program.size(), options.ignore_unknowns);
+                }
+                catch (std::runtime_error& e) {
+                        std::cout<<e.what()<<std::endl;
+                        return EXIT_FAILURE;
+                }
+
+        }
+
+        return usage();
+}
+
 int main(int argc, char* argv[])
 {
         option long_options[] = {
-                { "evaluate",        required_argument, 0, 'e' }
-              , { "ignore-unknowns", no_argument,       0, 'i' }
-              , { "help",            no_argument,       0, 'h' }
+                { "evaluate",         required_argument, 0, 'e' }
+              , { "use-signed-cells", no_argument,       0, 's' }
+              , { "ignore-unknowns",  no_argument,       0, 'i' }
+              , { "help",             no_argument,       0, 'h' }
         };
+
+        options_t options;
 
         int c;
         int option_index = 0;
 
-        bool ignore_unknowns = false;
-        bool inline_program = false;
-
-        while ((c = getopt_long(argc, argv, "e:ih", long_options, &option_index)) != -1) {
+        while ((c = getopt_long(argc, argv, "e:ihs", long_options, &option_index)) != -1) {
                 switch (c) {
                 case 'i':
-                        ignore_unknowns = true;
+                        options.ignore_unknowns = true;
                         break;
                 case 'e':
-                        inline_program = true;
+                        options.inline_program = true;
+                        break;
+                case 's':
+                        options.use_signed = true;
                         break;
                 case 'h':
                 case '?':
@@ -66,21 +108,5 @@ int main(int argc, char* argv[])
                 }
         }
 
-        if (inline_program && optind == argc)
-                return evaluate(argv[optind - 1], strlen(argv[optind - 1]), ignore_unknowns);
-
-        if (!inline_program && optind < argc) {
-                try {
-                        detail::reader_t program(argv[optind]);
-
-                        return evaluate(program.raw(), program.size(), ignore_unknowns);
-                }
-                catch (std::runtime_error& e) {
-                        std::cout<<e.what()<<std::endl;
-
-                        return EXIT_FAILURE;
-                }
-        }
-
-        return usage();
+        return resolve_options_and_evaluate(options, optind, argc, argv);
 }

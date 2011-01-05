@@ -33,7 +33,9 @@ inline int display_error_cause(const char* message, const char* program, unsigne
 {
         //! Display error and what caused it.
         std::cout<<"Error: "<<message<<", cause:"<<std::endl
-                 <<program<<std::endl<<std::setfill(' ')<<std::setw(command_index + 1)<<'^'<<std::endl;
+                 <<program<<std::endl<<std::setfill(' ')<<std::setw(command_index)<<'^'<<std::endl;
+
+        std::cout<<"Instruction #"<<command_index<<std::endl;
 
         return EXIT_FAILURE;
 }
@@ -41,9 +43,10 @@ inline int display_error_cause(const char* message, const char* program, unsigne
 } // namespace detail
 
 //! Optimizes and evaluates the program.
+template<typename C>
 int evaluate(const char* program, size_t program_size, bool ignore_unknowns = false)
 {
-        detail::state_t<unsigned int, std::vector<unsigned int> > state;
+        detail::state_t<unsigned int, std::vector<C> > state;
         detail::optimizations_table table(65536, 1);
 
         detail::optimize(program, program_size, table);

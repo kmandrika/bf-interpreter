@@ -60,7 +60,7 @@ template<typename T, typename S> inline void state_t<T, S>::increment_current_ce
 
 template<typename T, typename S> inline void state_t<T, S>::decrement_current_cell(typename S::value_type value)
 {
-        if (cells_[pc_] == 0)
+        if (cells_[pc_] == std::numeric_limits<typename S::value_type>::min())
                 throw std::runtime_error("cell underflow");
 
         cells_[pc_] -= value;
@@ -76,7 +76,7 @@ template<typename T, typename S> inline void state_t<T, S>::increment_pc(T value
 
 template<typename T, typename S> inline void state_t<T, S>::decrement_pc(T value)
 {
-        if (pc_ == 0)
+        if (pc_ == std::numeric_limits<T>::min())
                 throw std::runtime_error("pc underflow");
 
         pc_ -= value;
