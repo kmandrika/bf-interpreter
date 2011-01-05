@@ -34,7 +34,7 @@ template<
 >
 struct state_t {
         state_t() : pc_(0) {
-	}
+        }
 
         void increment_current_cell(typename S::value_type value = 1);
         void decrement_current_cell(typename S::value_type value = 1);
@@ -53,7 +53,7 @@ private:
 template<typename T, typename S> inline void state_t<T, S>::increment_current_cell(typename S::value_type value)
 {
         if (cells_[pc_] == std::numeric_limits<typename S::value_type>::max())
-	        throw std::runtime_error("cell overflow");
+                throw std::runtime_error("cell overflow");
 
         cells_[pc_] += value;
 }
@@ -61,7 +61,7 @@ template<typename T, typename S> inline void state_t<T, S>::increment_current_ce
 template<typename T, typename S> inline void state_t<T, S>::decrement_current_cell(typename S::value_type value)
 {
         if (cells_[pc_] == 0)
-	        throw std::runtime_error("cell underflow");
+                throw std::runtime_error("cell underflow");
 
         cells_[pc_] -= value;
 }
@@ -69,17 +69,17 @@ template<typename T, typename S> inline void state_t<T, S>::decrement_current_ce
 template<typename T, typename S> inline void state_t<T, S>::increment_pc(T value)
 {
         if (pc_ == std::numeric_limits<T>::max())
-	        throw std::runtime_error("pc overflow");
+                throw std::runtime_error("pc overflow");
 
-	pc_ += value;
+        pc_ += value;
 }
 
 template<typename T, typename S> inline void state_t<T, S>::decrement_pc(T value)
 {
         if (pc_ == 0)
-	        throw std::runtime_error("pc underflow");
+                throw std::runtime_error("pc underflow");
 
-	pc_ -= value;
+        pc_ -= value;
 }
 
 template<typename T, typename S> inline typename S::value_type state_t<T, S>::get() const

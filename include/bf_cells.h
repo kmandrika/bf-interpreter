@@ -31,14 +31,15 @@ inline unsigned int growth_factor()
 
 //! Cells - a wrapper that facilitates automatic growth.
 template<typename S = std::vector<unsigned char> > struct cells_t {
-        explicit cells_t(unsigned int init_size = 65536) : cells_(init_size, 0) {
-	}
+        explicit cells_t(unsigned int init_size = 65536, typename S::value_type initial = 0) : cells_(init_size, initial), initial_(initial) {
+        }
 
         typename S::value_type&       operator [](unsigned int index);
         typename S::value_type const& operator [](unsigned int index) const;
 
 private:
         mutable S cells_;
+        typename S::value_type initial_;
 };
 
 template<typename S> inline typename S::value_type& cells_t<S>::operator [](unsigned int index)
@@ -46,9 +47,9 @@ template<typename S> inline typename S::value_type& cells_t<S>::operator [](unsi
         typename S::size_type size = cells_.size();
 
         if (index >= size)
-	        cells_.resize(size + (index - size) + growth_factor(), 0);
+                cells_.resize(size + (index - size) + growth_factor(), initial_);
 
-	return cells_[index];
+        return cells_[index];
 }
 
 template<typename S> inline typename S::value_type const& cells_t<S>::operator [](unsigned int index) const
@@ -56,9 +57,9 @@ template<typename S> inline typename S::value_type const& cells_t<S>::operator [
         typename S::size_type size = cells_.size();
 
         if (index >= size)
-	        cells_.resize(size + (index - size) + growth_factor(), 0);
+                cells_.resize(size + (index - size) + growth_factor(), initial_);
 
-	return cells_[index];
+        return cells_[index];
 }
 
 } // namespace detail
