@@ -92,7 +92,7 @@ void optimize(const char* program, size_t program_size, optimizations_table& tab
                 case '\n':
                         break;
                 case '>':
-                        command_index += (table[command_index] = detail::repetition_length(
+                        command_index += (table[command_index] = repetition_length(
                                 program
                               , program_size
                               , command_index
@@ -100,7 +100,7 @@ void optimize(const char* program, size_t program_size, optimizations_table& tab
                         ));
                         continue;
                 case '<':
-                        command_index += (table[command_index] = detail::repetition_length(
+                        command_index += (table[command_index] = repetition_length(
                                 program
                               , program_size
                               , command_index
@@ -108,7 +108,7 @@ void optimize(const char* program, size_t program_size, optimizations_table& tab
                         ));
                         continue;
                 case '+':
-                        command_index += (table[command_index] = detail::repetition_length(
+                        command_index += (table[command_index] = repetition_length(
                                 program
                               , program_size
                               , command_index
@@ -116,7 +116,7 @@ void optimize(const char* program, size_t program_size, optimizations_table& tab
                         ));
                         continue;
                 case '-':
-                        command_index += (table[command_index] = detail::repetition_length(
+                        command_index += (table[command_index] = repetition_length(
                                 program
                               , program_size
                               , command_index
@@ -139,7 +139,7 @@ void optimize(const char* program, size_t program_size, optimizations_table& tab
                         }
 
                         //! Find the matching ']'
-                        table[command_index] = detail::track_forward(program, command_index, program_size);
+                        table[command_index] = track_forward(program, command_index, program_size);
                         table[table[command_index]] = command_index;
                         break;                      
                 }
