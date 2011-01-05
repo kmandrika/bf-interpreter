@@ -27,6 +27,8 @@
 #include <iomanip>
 #include <cstdlib>
 
+#include <cstdio>
+
 namespace detail {
 
 inline int display_error_cause(const char* message, const char* program, unsigned int command_index)
@@ -78,10 +80,10 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
                                 state.decrement_current_cell(table_value);
                                 continue;
                         case '.':
-                                std::cout<<static_cast<unsigned char>(state.get())<<std::flush;
+                                putchar(state.get());
                                 break;
                         case ',':
-                                std::cin>>state.set();
+                                state.set() = getchar();
                                 break;
                         case '[':
                                 if (table_value == detail::CC_Clear.table_value) {
