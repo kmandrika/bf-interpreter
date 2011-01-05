@@ -7,6 +7,7 @@ Usage: [OPTION]... <source-file>
 Options:
   -e, --evaluate=program    evaluate a one line program
   -i, --ignore-unknowns     ignore unknown commands within the program
+  -s, --use-signed-cells    use a signed type for each cell
   -h, --help                print this message
 
 --------------------------------------------------------------------------
