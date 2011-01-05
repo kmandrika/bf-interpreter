@@ -24,6 +24,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -83,7 +84,52 @@ template<typename Direction> unsigned int track(const char* program, unsigned in
 	return 0;
 }
 
+inline unsigned int repetition_length(const char* program, size_t program_size, unsigned int command_index, char command)
+{
+        unsigned int length = 0;
+
+	while (program[command_index++] == command && ++length) {
+	}
+
+	return length;
+}
+
+const char O_Clear[] = "[-]";
+const char O_Add[] = "[->+<]";
+
 } // namespace detail
+
+#define OPTIMIZE_REPETITIONS(program, program_size, command_index, command, state, function)     \
+        repetitions = detail::repetition_length(program, program_size, command_index, command);  \
+        state.function(repetitions);                                                             \
+        command_index += repetitions
+
+#define OPTIMIZE_PATTERN(program, program_size, command_index, pattern)	                         \
+        (command_index + sizeof pattern - 2 < program_size && !memcmp(                           \
+                static_cast<const void *>(program + command_index)                               \
+	      , static_cast<const void *>(pattern)		                                 \
+	      , sizeof pattern - 1			                                         \
+	))
+
+#define OPTIMIZE_CLEAR(program, program_size, command_index, state)                              \
+        if (OPTIMIZE_PATTERN(program, program_size, command_index, detail::O_Clear)) {           \
+	        state.set() = 0;                                                                 \
+		command_index += sizeof detail::O_Clear - 2;                                     \
+		break;                                                                           \
+        }
+
+#define OPTIMIZE_ADD(program, program_size, command_index, state)	                         \
+        if (OPTIMIZE_PATTERN(program, program_size, command_index, detail::O_Add)) {             \
+	        unsigned int this_cell = state.get();                                            \
+		unsigned int next_cell;                                                          \
+		state.set() = 0;                                                                 \
+		state.increment_pc();                                                            \
+		next_cell = state.get();                                                         \
+		state.set() = this_cell + next_cell;                                             \
+		state.decrement_pc();                                                            \
+		command_index += sizeof detail::O_Add - 2;                                       \
+		break;                                                                           \
+	}
 
 int evaluate(const char* program, size_t program_size, bool ignore_unknowns = false)
 {
@@ -91,6 +137,7 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
 	detail::cells_t<std::vector<unsigned int> > jump;
 
 	unsigned int command_index = 0;
+	unsigned int repetitions = 0;
 
 	try {
 	        while (command_index != program_size) {
@@ -99,17 +146,17 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
 			case '\n':
 			        break;
 			case '>':
-			        state.increment_pc();
-				break;
+			        OPTIMIZE_REPETITIONS(program, program_size, command_index, '>', state, increment_pc);
+				continue;
 			case '<':
-			        state.decrement_pc();
-				break;
+			        OPTIMIZE_REPETITIONS(program, program_size, command_index, '<', state, decrement_pc);
+				continue;
 			case '+':
-			        state.increment_current_cell();
-				break;
+			        OPTIMIZE_REPETITIONS(program, program_size, command_index, '+', state, increment_current_cell);
+				continue;
 			case '-':
-			        state.decrement_current_cell();
-				break;
+			        OPTIMIZE_REPETITIONS(program, program_size, command_index, '-', state, decrement_current_cell);
+				continue;
 			case '.':
 			        std::cout<<static_cast<unsigned char>(state.get())<<std::flush;
 				break;
@@ -117,6 +164,9 @@ int evaluate(const char* program, size_t program_size, bool ignore_unknowns = fa
 			        std::cin>>state.set();
 				break;
 			case '[':
+			        OPTIMIZE_CLEAR(program, program_size, command_index, state);
+				OPTIMIZE_ADD(program, program_size, command_index, state);
+
 			        if (state.get() == 0)
 				        command_index = jump[command_index] == 0 ?
 					        jump[command_index] = detail::track(program, command_index, detail::forward(program_size)) :
