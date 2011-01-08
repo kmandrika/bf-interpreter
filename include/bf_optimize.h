@@ -62,11 +62,17 @@ struct composite_command {
         const char*       command;           // Sequence of commands that make up the composite
         const size_t      command_length;    // Length of the sequence
         const int         table_value;       // Value for the optimizations table
+
+        //! Generates unique table values.
+        static int next_unique() {
+                static int unique = 0;
+                return unique -= 1;
+        }
 };
 
 //! The optimizer currently supports only two values.
-const composite_command CC_Clear = { "[-]",    sizeof "[-]"    - 1, -1 };
-const composite_command CC_Add   = { "[->+<]", sizeof "[->+<]" - 1, -2 };
+const composite_command CC_Clear = { "[-]",    sizeof "[-]"    - 1, composite_command::next_unique() };
+const composite_command CC_Add   = { "[->+<]", sizeof "[->+<]" - 1, composite_command::next_unique() };
 
 typedef cells_t<std::vector<int> > optimizations_table;
 
