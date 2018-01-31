@@ -45,7 +45,7 @@ struct state_t {
         typename S::value_type  get() const;
         typename S::value_type& set();         // this should probably be something like set(C value)
 
-        size_t cell_count() const;
+        std::size_t cell_count() const;
 
 private:
         cells_t<S> cells_;
@@ -94,7 +94,7 @@ template<typename T, typename S> inline typename S::value_type& state_t<T, S>::s
         return cells_[pc_];
 }
 
-template<typename T, typename S> inline size_t state_t<T, S>::cell_count() const
+template<typename T, typename S> inline std::size_t state_t<T, S>::cell_count() const
 {
         return cells_.size();
 }
